@@ -14,11 +14,12 @@ function App() {
   const [name, setName] = useState('');  // User's name
   const [expenses, setExpenses] = useState([]);  // List of all expenses
   const [people, setPeople] = useState([]);  // List of all registered people
+  const [totalRegisteredUsers, setTotalRegisteredUsers] = useState(0); // Total number of registered users
   const [loadingExpenses, setLoadingExpenses] = useState(false);  // Whether expenses are being loaded
   const [expenseLabel, setExpenseLabel] = useState('');  // Description for a new expense
   const [participants, setParticipants] = useState([{ address: '', amountPaid: 0, amountOwed: 0 }]);  // People involved in a new expense
   const [showAddExpense, setShowAddExpense] = useState(false);  // Whether to show the "Add Expense" form
-  const contractAddress = "0x871acc519da5b30d4978b993090b2239975b4ac4"; // Paste the address recieved from Remix IDE here
+  const contractAddress = "0xd8e8f46b5804f570b2fae97d5316eae29d9611f1"; // Paste the address recieved from Remix IDE here
 
   // --- RUNS WHEN THE PAGE FIRST LOADS ---
   // This connects to the user's Ethereum wallet (like MetaMask)
@@ -75,6 +76,21 @@ function App() {
     };
   }, []);  // Empty array means this runs only once when page loads
 
+  // --- CHECK WALLET REGISTRATION ---
+  // Checks if a wallet address is registered in the contract
+  const checkWalletRegistration = async (walletAddress) => {
+    if (!contract || !walletAddress) return false;
+    
+    try {
+      // Call the isRegistered function in our smart contract
+      const registered = await contract.isRegistered(walletAddress);
+      return registered;
+    } catch (error) {
+      console.error("Error checking wallet registration:", error);
+      return false;
+    }
+  };
+
   // --- RUNS WHEN CONTRACT OR ACCOUNT CHANGES ---
   // Checks if user is registered and loads their data
   useEffect(() => {
@@ -82,15 +98,19 @@ function App() {
       if (!contract || !account) return;  // Skip if contract or account isn't ready
 
       try {
-        // Ask the contract if this user is registered
-        const person = await contract.getPerson(account);
-        const registered = person.walletAddress !== ethers.constants.AddressZero;
+        // Check if this wallet is registered using our new function
+        const registered = await checkWalletRegistration(account);
         setIsRegistered(registered);
         
         if (registered) {
-          setName(person.name);  // Save the user's name
-          await loadExpenses();  // Load all expenses
-          await loadPeople();  // Load all registered people
+          // If registered, get the user's name
+          const person = await contract.getPerson(account);
+          setName(person.name);
+          
+          // Load all data
+          await loadExpenses();
+          await loadPeople();
+          await loadTotalRegisteredUsers();
         }
       } catch (error) {
         console.error("Error checking registration:", error);
@@ -118,6 +138,26 @@ function App() {
     }
   }, [expenses, people]);  // Run when expenses or people change
 
+  // --- LOAD TOTAL REGISTERED USERS ---
+  // Gets the total number of registered users from the blockchain
+  const loadTotalRegisteredUsers = async () => {
+    if (!contract) return; // Skip if contract isn't ready
+    try {
+      // Call the getTotalRegisteredPeople function in our smart contract
+      const count = await contract.getTotalRegisteredPeople();
+      setTotalRegisteredUsers(count.toNumber()); // Convert from BigNumber to regular number
+    } catch (error) {
+      console.error("Error loading total registered users:", error);
+    }
+  };
+
+  // Load total registered users when contract changes or after registration
+  useEffect(() => {
+    if (contract) {
+      loadTotalRegisteredUsers();
+    }
+  }, [contract, people]); // Reload when contract changes or people list updates
+
   // --- REGISTER NEW USER ---
   // Saves user's name to the blockchain
   const registerPerson = async () => {
@@ -133,6 +173,7 @@ function App() {
       alert("Registration successful!");
       await loadPeople();  // Refresh list of people
       await loadExpenses();  // Refresh list of expenses
+      await loadTotalRegisteredUsers(); // Refresh total users count
     } catch (error) {
       console.error("Registration failed:", error);
       alert(`Registration failed: ${error.message}`);
@@ -257,6 +298,7 @@ function App() {
       setShowAddExpense(false);
       await loadExpenses();
       await loadPeople();
+      await loadTotalRegisteredUsers(); // Refresh total users count
     } catch (error) {
       console.error("Error adding expense:", error);
       alert(`Error: ${error.message}`);
@@ -300,6 +342,14 @@ function App() {
         : !isRegistered ? (
           <div>
             <h2>Register</h2>
+            <div style={{ background: "#ffeeee", padding: "10px", borderRadius: "5px", marginBottom: "15px" }}>
+              <p style={{ margin: "0" }}>
+                <span style={{ fontWeight: "bold", color: "#cc0000" }}>Wallet Status:</span> Not Registered
+              </p>
+              <p style={{ margin: "5px 0 0 0", fontSize: "0.9em" }}>
+                Your wallet address ({account.substring(0, 6)}...{account.substring(38)}) needs to be registered.
+              </p>
+            </div>
             <input
               type="text"
               placeholder="Your Name"
@@ -307,6 +357,9 @@ function App() {
               onChange={(e) => setName(e.target.value)}
             />
             <button onClick={registerPerson}>Register</button>
+            {totalRegisteredUsers > 0 && (
+              <p>Join {totalRegisteredUsers} user{totalRegisteredUsers !== 1 ? 's' : ''} already registered!</p>
+            )}
           </div>
         ) 
         
@@ -314,7 +367,15 @@ function App() {
         : (
           <div>
             <h2>Welcome, {name}</h2>
-            <p>Account: {account}</p>
+            <div style={{ background: "#eeffee", padding: "10px", borderRadius: "5px", marginBottom: "15px" }}>
+              <p style={{ margin: "0" }}>
+                <span style={{ fontWeight: "bold", color: "#00cc00" }}>Wallet Status:</span> Registered
+              </p>
+              <p style={{ margin: "5px 0 0 0", fontSize: "0.9em" }}>
+                Wallet {account.substring(0, 6)}...{account.substring(38)} is registered as {name}
+              </p>
+            </div>
+            <p>Total Registered Users: {totalRegisteredUsers}</p>
             <button onClick={() => setShowAddExpense(!showAddExpense)}>
               {showAddExpense ? "Cancel" : "Add Expense"}
             </button>

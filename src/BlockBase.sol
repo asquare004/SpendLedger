@@ -257,4 +257,21 @@ contract ExpenseTracker {
     function getAllRegisteredPeople() public view returns (address[] memory) {
         return registeredPeople;
     }
+
+    /**
+     * @dev Check if a user is registered
+     * @param _addr Address of the user to check
+     * @return True if the user is registered, false otherwise
+     */
+    function isRegistered(address _addr) public view returns (bool) {
+        return people[_addr].walletAddress != address(0);
+    }
+
+    /**
+     * @dev Get total number of registered people
+     * @return Total number of registered users on the platform
+     */
+    function getTotalRegisteredPeople() public view returns (uint256) {
+        return registeredPeople.length;
+    }
 }

@@ -1,33 +1,5 @@
 [
 	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_label",
-				"type": "string"
-			},
-			{
-				"internalType": "address[]",
-				"name": "_participants",
-				"type": "address[]"
-			},
-			{
-				"internalType": "uint256[]",
-				"name": "_amountsPaid",
-				"type": "uint256[]"
-			},
-			{
-				"internalType": "uint256[]",
-				"name": "_amountsOwed",
-				"type": "uint256[]"
-			}
-		],
-		"name": "addExpense",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -94,26 +66,28 @@
 		"inputs": [
 			{
 				"internalType": "string",
-				"name": "_name",
+				"name": "_label",
 				"type": "string"
+			},
+			{
+				"internalType": "address[]",
+				"name": "_participants",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "_amountsPaid",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "_amountsOwed",
+				"type": "uint256[]"
 			}
 		],
-		"name": "registerPerson",
+		"name": "addExpense",
 		"outputs": [],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_to",
-				"type": "address"
-			}
-		],
-		"name": "settleDebt",
-		"outputs": [],
-		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -279,6 +253,64 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTotalRegisteredPeople",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "isRegistered",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			}
+		],
+		"name": "registerPerson",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "settleDebt",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	}
 ]
