@@ -9,24 +9,24 @@
 ### 🛠️ Solidity Features
 
 1. **Check if a user is registered**  
-   ➤ `isRegistered(address user)` – Returns `true` if the user is registered, `false` otherwise.
+   ➤ Added `isRegistered` function to BlockBase.sol that takes address of the user as input and returns the boolean value `true` if the user is registered, `false` otherwise.
 
 2. **Get total number of registered users**  
-   ➤ `getTotalRegisteredPeople()` – Returns the total number of registered users on the platform.
+   ➤ Added `getTotalRegisteredPeople` function to BlockBase.sol that returns the total number of registered users on the platform.
 
 
 ### 💻 JavaScript Features
 
 1. **Display connected wallet address**  
-   - Added `checkWalletRegistration` in `App.js` that checks the registration status of the connected wallet using the smart contract’s `isRegistered` function.  
+   - Added `checkWalletRegistration` function in `App.js` that checks the registration status of the connected wallet using the smart contract’s `isRegistered` function.  
    - UI: A color-coded status box displays the wallet’s registration status.
 
 2. **Display total registered users**  
    - Introduced a state variable `totalRegisteredUsers` in `App.js` to store user count.  
-   - Created `loadTotalRegisteredUsers` to fetch data using the contract’s `getTotalRegisteredPeople` method.  
-   - Triggered via `useEffect` when the contract is ready or people list updates.  
-   - Count refreshes after user registration or expense addition.  
-   - UI elements added for dynamic and real-time display of total registered users.
+   - Added `loadTotalRegisteredUsers` function to fetch data using the contract’s `getTotalRegisteredPeople` method.  
+   - Triggered via `useEffect` when the contract is ready or people list updates.
+   - Added code to refresh the total count after registration and after adding expenses.
+   - Added UI elements to display the count in all the necessary places.
 
 
 ## 🧪 Screenshots
